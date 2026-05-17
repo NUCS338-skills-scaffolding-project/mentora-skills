@@ -1,0 +1,16 @@
+# Team repo clones (local only)
+clones/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+.env
+
+# OS
+.DS_Store
+collision_report.yaml
+config/teams.yaml

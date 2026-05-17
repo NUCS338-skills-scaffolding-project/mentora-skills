@@ -1,0 +1,47 @@
+name: Sync skills from team repos
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # every 6 hours
+  workflow_dispatch:          # manual trigger from GitHub UI
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install pyyaml
+
+      - name: Configure SSH for private repos
+        if: ${{ secrets.GH_DEPLOY_KEY != '' }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GH_DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Sync from team repos
+        run: python scripts/sync.py
+
+      - name: Validate synced skills
+        run: python scripts/validate_skill.py --all mentora_skills/skills/
+
+      - name: Commit and push if anything changed
+        run: |
+          git config user.name  "skills-sync[bot]"
+          git config user.email "skills-sync[bot]@users.noreply.github.com"
+          git add mentora_skills/
+          git diff --staged --quiet || (
+            git commit -m "sync: pick up skill updates from team repos [skip ci]" &&
+            git push
+          )

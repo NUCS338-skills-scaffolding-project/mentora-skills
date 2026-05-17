@@ -1,0 +1,21 @@
+name: Validate skills
+
+on:
+  push:
+    paths:
+      - 'mentora_skills/skills/**'
+  pull_request:
+    paths:
+      - 'mentora_skills/skills/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pyyaml
+      - name: Validate all skills
+        run: python scripts/validate_skill.py --all mentora_skills/skills/

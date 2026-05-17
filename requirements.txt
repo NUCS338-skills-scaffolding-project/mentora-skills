@@ -1,0 +1,2 @@
+# Runtime dependencies for scripts (validate_skill.py, import_skills.py, sync.py)
+pyyaml>=6.0

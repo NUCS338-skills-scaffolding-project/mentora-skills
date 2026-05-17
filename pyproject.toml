@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=59", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mentora-skills"
+version = "0.1.0"
+description = "Master skills package for the Mentora tutoring system"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pyyaml>=6.0"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["mentora_skills", "mentora_skills.*"]
+
+[tool.setuptools.package-data]
+"mentora_skills.skills.*" = ["skills.md", "logic.py"]
+"mentora_skills.skills" = ["*/skills.md", "*/logic.py"]
