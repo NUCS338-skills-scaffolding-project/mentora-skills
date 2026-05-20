@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      GH_DEPLOY_KEY: ${{ secrets.GH_DEPLOY_KEY }}
 
     steps:
       - uses: actions/checkout@v4
@@ -23,7 +25,7 @@ jobs:
       - run: pip install pyyaml
 
       - name: Configure SSH for private repos
-        if: ${{ secrets.GH_DEPLOY_KEY != '' }}
+        if: ${{ env.GH_DEPLOY_KEY != '' }}
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.GH_DEPLOY_KEY }}" > ~/.ssh/id_ed25519
