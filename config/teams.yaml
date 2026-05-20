@@ -1,0 +1,64 @@
+# teams.yaml — Team repos to sync skills from.
+# Add a team entry when onboarding a new team.
+# Remove entries as teams wind down and their skills are already in master.
+
+teams:
+  # - name: team-b
+  #   repo: https://github.com/your-org/team-b-skills
+  #   branch: main
+  #   skills_path: skills/
+
+  - name: cs338-skills
+    repo: https://github.com/NUCS338-skills-scaffolding-project/cs338-skills
+    branch: main
+    skills_path: skills/
+
+  - name: poli_sci-210-skills
+    repo: https://github.com/NUCS338-skills-scaffolding-project/poli_sci-210-skills
+    branch: main
+    skills_path: skills/
+
+  - name: cs-348-skills
+    repo: https://github.com/NUCS338-skills-scaffolding-project/cs-348-skills
+    branch: main
+    skills_path: skills/
+
+  - name: phil-219-skills
+    repo: https://github.com/NUCS338-skills-scaffolding-project/phil-219-skills
+    branch: main
+    skills_path: skills/
+
+  - name: CS-213-skills
+    repo: https://github.com/NUCS338-skills-scaffolding-project/CS-213-skills
+    branch: main
+    skills_path: skills/
+
+  - name: ling-250-skills
+    repo: https://github.com/NUCS338-skills-scaffolding-project/ling-250-skills
+    branch: main
+    skills_path: skills/
+
+  - name: cs-343-skills
+    repo: https://github.com/NUCS338-skills-scaffolding-project/cs-343-skills
+    branch: main
+    skills_path: skills/
+
+  - name: history-315-skills
+    repo: https://github.com/NUCS338-skills-scaffolding-project/history-315-skills
+    branch: main
+    skills_path: skills/
+
+  - name: cs-214-skills
+    repo: https://github.com/NUCS338-skills-scaffolding-project/cs-214-skills
+    branch: main
+    skills_path: skills/
+
+  - name: jour-201-1-skills
+    repo: https://github.com/NUCS338-skills-scaffolding-project/jour-201-1-skills
+    branch: main
+    skills_path: skills/
+
+  - name: asian_am-225-skills
+    repo: https://github.com/NUCS338-skills-scaffolding-project/asian_am-225-skills
+    branch: main
+    skills_path: skills/
