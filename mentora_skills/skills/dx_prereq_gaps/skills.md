@@ -2,7 +2,7 @@
 skill_id: "dx-prereq-gaps"           
 name: "Diagnose Prerequisite Gaps"              
 skill_type: "instructional"
-stance: "socratic"                    
+stance: "meta"                    
 tags: ["phonetics", "diagnostic", "prerequisites", "gaps", "remediation"]
 course_types: ["humanities"]         
 learning_goal_tags:                  
@@ -11,12 +11,14 @@ learning_goal_tags:
   - "request-targeted-help"
   - "reflect-on-progress"
 trigger_signals:
-  - "validate-prereqs-fail"
-  - "cannot-localize-stuck-point"
-  - "repeated-restart-without-progress"
-  - "vague-references-to-named-concepts"
+  - "student-says-dont-know-what-doing"
+  - "student-says-im-lost"
+  - "student-says-missing-something-basic"
+  - "student-asks-where-to-start"
+  - "student-asks-what-am-i-missing"
+  - "student-says-need-to-start-over"
   - "hint-failed-to-unblock"
-  - "remediation-plan-requested"
+  - "validate-prereqs-fail"
 chip_icon: "🔍"                      
 version: "0.1.0"                     
 python_entry: "logic.py"
