@@ -2,6 +2,7 @@
 skill_id: "extract-syllabus"
 name: "Extract Syllabus"
 skill_type: "code"
+stance: "socratic"
 tags: ["import", "syllabus", "course-setup"]
 course_types: ["cs", "humanities"]
 learning_goal_tags:
