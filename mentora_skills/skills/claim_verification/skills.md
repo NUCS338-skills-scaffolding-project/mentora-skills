@@ -143,3 +143,5 @@ Example stem:
 To test whether that claim is supported, we need to compare it with the evidence you plan to use.
 
 **Question:** What quotation, example, or source are you using to support this claim?
+
+---
