@@ -195,3 +195,68 @@ def run(input):
     "done_reasons": done_reasons,
     "observations": observations,
   }
+
+
+def render_progress(observations: list[dict], scope: str) -> dict:
+  """Score this student's critique-design practice for the Progress tab.
+
+  See poli_sci-210-skills/docs/superpowers/specs/2026-05-17-render-progress-rubrics.md.
+
+  Coverage formula: per-assignment max(int(chain_progress.split(' of ')[0])),
+  summed across assignments touched. PROFICIENT_AT = 9.
+
+  Args:
+    observations: rows from skill_observations (already filtered to this
+      skill + student; either all rows for the course or all rows for
+      one assignment, depending on scope).
+    scope: 'course' or 'assignment'.
+
+  Returns:
+    scope='course':     {status, score, headline}
+    scope='assignment': {status, score, insight=None}
+  """
+  PROFICIENT_AT = 9
+  THRESHOLDS = (0.30, 0.60, 0.85)
+
+  # Group by assignment_id; for each, take the high-water chain_progress value.
+  by_asg: dict = {}
+  for o in observations:
+    diag = o.get("raw_diagnostic") or {}
+    chain_progress = diag.get("chain_progress")
+    try:
+      cc = int(str(chain_progress).split(" of ")[0])
+    except (TypeError, ValueError, IndexError):
+      cc = 0
+    asg = o.get("assignment_id")
+    if asg is None:
+      continue
+    by_asg[asg] = max(by_asg.get(asg, 0), cc)
+
+  if scope == "course":
+    cumulative = sum(by_asg.values())
+    score = min(1.0, cumulative / PROFICIENT_AT)
+  else:  # 'assignment'
+    cumulative = max(by_asg.values()) if by_asg else 0
+    score = min(1.0, cumulative / PROFICIENT_AT)
+
+  if score >= THRESHOLDS[2]:
+    status = "proficient"
+  elif score >= THRESHOLDS[1]:
+    status = "advanced"
+  elif score >= THRESHOLDS[0]:
+    status = "developing"
+  else:
+    status = "learning"
+
+  if scope == "course":
+    return {
+      "status": status,
+      "score": score,
+      "headline": f"{cumulative} of 9 critique phases completed",
+    }
+  else:
+    return {
+      "status": status,
+      "score": score,
+      "insight": None,  # caller falls back to _default_insight
+    }

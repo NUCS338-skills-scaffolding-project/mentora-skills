@@ -180,3 +180,68 @@ def run(input):
     "done_reasons": done_reasons,
     "observations": observations,
   }
+
+
+def render_progress(observations: list[dict], scope: str) -> dict:
+  """Score this student's design-skeleton practice for the Progress tab.
+
+  See poli_sci-210-skills/docs/superpowers/specs/2026-05-17-render-progress-rubrics.md.
+
+  Coverage formula (fractional model): per-assignment
+  max(len(filled_fields) / 7), summed across assignments touched.
+  PROFICIENT_AT = 3 (equivalent to 3 fully-completed skeletons).
+
+  Args:
+    observations: rows from skill_observations (already filtered to this
+      skill + student; either all rows for the course or all rows for
+      one assignment, depending on scope).
+    scope: 'course' or 'assignment'.
+
+  Returns:
+    scope='course':     {status, score, headline}
+    scope='assignment': {status, score, insight=None}
+  """
+  PROFICIENT_AT = 3  # calibration: review after fall pilot
+  THRESHOLDS = (0.30, 0.60, 0.85)
+
+  # Group by assignment_id; for each, take the high-water fractional fill.
+  by_asg: dict = {}
+  for o in observations:
+    diag = o.get("raw_diagnostic") or {}
+    filled_fields = diag.get("filled_fields") or []
+    cc = len(filled_fields) / 7
+    asg = o.get("assignment_id")
+    if asg is None:
+      continue
+    by_asg[asg] = max(by_asg.get(asg, 0.0), cc)
+
+  if scope == "course":
+    cumulative = sum(by_asg.values())
+    score = min(1.0, cumulative / PROFICIENT_AT)
+  else:  # 'assignment'
+    cumulative = max(by_asg.values()) if by_asg else 0.0
+    score = min(1.0, cumulative / PROFICIENT_AT)
+
+  if score >= THRESHOLDS[2]:
+    status = "proficient"
+  elif score >= THRESHOLDS[1]:
+    status = "advanced"
+  elif score >= THRESHOLDS[0]:
+    status = "developing"
+  else:
+    status = "learning"
+
+  # For headline, show cumulative as a rounded count of skeletons-worth.
+  cumulative_display = round(cumulative, 2)
+  if scope == "course":
+    return {
+      "status": status,
+      "score": score,
+      "headline": f"{cumulative_display} of 3 design skeletons completed",
+    }
+  else:
+    return {
+      "status": status,
+      "score": score,
+      "insight": None,  # caller falls back to _default_insight
+    }

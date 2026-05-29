@@ -174,3 +174,64 @@ def run(input):
     "done_reasons": done_reasons,
     "observations": observations,
   }
+
+
+def render_progress(observations: list[dict], scope: str) -> dict:
+  """Score this student's trace-evidence practice for the Progress tab.
+
+  See poli_sci-210-skills/docs/superpowers/specs/2026-05-17-render-progress-rubrics.md.
+
+  Coverage formula: count of distinct assignments where any row has
+  raw_diagnostic['done'] == True. PROFICIENT_AT = 4.
+
+  Args:
+    observations: rows from skill_observations (already filtered to this
+      skill + student; either all rows for the course or all rows for
+      one assignment, depending on scope).
+    scope: 'course' or 'assignment'.
+
+  Returns:
+    scope='course':     {status, score, headline}
+    scope='assignment': {status, score, insight=None}
+  """
+  PROFICIENT_AT = 4
+  THRESHOLDS = (0.30, 0.60, 0.85)
+
+  # Group by assignment_id; for each, 1 if any row has done=True, else 0.
+  by_asg: dict = {}
+  for o in observations:
+    diag = o.get("raw_diagnostic") or {}
+    cc = 1 if diag.get("done") else 0
+    asg = o.get("assignment_id")
+    if asg is None:
+      continue
+    by_asg[asg] = max(by_asg.get(asg, 0), cc)
+
+  if scope == "course":
+    cumulative = sum(by_asg.values())
+    score = min(1.0, cumulative / PROFICIENT_AT)
+  else:  # 'assignment'
+    cumulative = max(by_asg.values()) if by_asg else 0
+    score = min(1.0, cumulative / PROFICIENT_AT)
+
+  if score >= THRESHOLDS[2]:
+    status = "proficient"
+  elif score >= THRESHOLDS[1]:
+    status = "advanced"
+  elif score >= THRESHOLDS[0]:
+    status = "developing"
+  else:
+    status = "learning"
+
+  if scope == "course":
+    return {
+      "status": status,
+      "score": score,
+      "headline": f"{cumulative} of 4 evidence traces completed",
+    }
+  else:
+    return {
+      "status": status,
+      "score": score,
+      "insight": None,  # caller falls back to _default_insight
+    }
